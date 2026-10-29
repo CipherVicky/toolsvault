@@ -1,0 +1,484 @@
+/* ==================================================================
+   GraphicoToolz — Weather Vibes (v7 — GFXToolz system, adapted)
+   ------------------------------------------------------------------
+   Architecture (3-zone layered system):
+     z=0  Background image/video  (full viewport, drama at top)
+     z=1  Gradient overlay         (fades scene into mode page bg)
+     z=2  Particle canvas          (rain/snow/leaves/lightning)
+     z=3  App content              (sidebar + topbar + cards)
+
+   Three modes compose freely:
+     [data-theme="light|dark"]   — base theme (chosen by user)
+     body.gt-weather-on          — weather active
+     body.gt-w-{mode}            — which weather (sets bg + accent)
+     body.gt-night-mode          — force dark UI (stars/aurora only)
+
+   Single card recipe (used everywhere):
+     bg rgba(255,255,255,0.72) light / rgba(25,28,38,0.72) dark
+     backdrop-filter blur(12px) saturate(130%)
+     border rgba(255,255,255,0.55) light / rgba(255,255,255,0.08) dark
+   ================================================================== */
+
+
+/* ==================================================================
+   1)  BACKGROUND IMAGE/VIDEO LAYER  (z-index: 0)
+   ================================================================== */
+.gt-weather-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  will-change: opacity;
+}
+.gt-weather-bg.active { opacity: 1; }
+
+.gt-weather-bg .gt-bg-poster {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: saturate(1.08) contrast(1.04);
+  transform: scale(1.08);
+  animation: gt-bg-zoom 80s ease-in-out infinite alternate;
+}
+.gt-weather-bg .gt-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+  filter: saturate(1.08) contrast(1.04);
+}
+.gt-weather-bg .gt-bg-video[src]:not([src=""]) { opacity: 1; }
+
+@keyframes gt-bg-zoom {
+  0%   { transform: scale(1.08) translate3d(0,0,0); }
+  100% { transform: scale(1.16) translate3d(-1%, -1%, 0); }
+}
+
+/* Rain image — slow brightness pulse during lightning */
+.gt-weather-bg.gt-w-rain .gt-bg-poster {
+  animation: gt-bg-zoom 80s ease-in-out infinite alternate, gt-rain-pulse 14s ease-in-out infinite;
+}
+@keyframes gt-rain-pulse {
+  0%, 48%, 100% { filter: saturate(1.08) contrast(1.04) brightness(0.92); }
+  50%           { filter: saturate(1.18) contrast(1.10) brightness(1.18); }
+  52%           { filter: saturate(1.08) contrast(1.04) brightness(0.96); }
+  55%           { filter: saturate(1.13) contrast(1.07) brightness(1.05); }
+  58%           { filter: saturate(1.08) contrast(1.04) brightness(0.92); }
+}
+
+
+/* ==================================================================
+   2)  PER-MODE PAGE BACKGROUND + ACCENT TOKENS
+   Each mode shifts the body bg color + the accent vars used by
+   buttons, focus rings, active nav, etc. One body class controls
+   everything — clean cascading.
+   ================================================================== */
+
+/* Defaults (used when weather off) */
+body { --mode-accent: var(--accent, #a78bfa); --mode-accent-bold: var(--accent-bold, #8b5cf6); }
+
+/* --- LIGHT THEME mode tints --- */
+body.gt-weather-on.gt-w-rain   { background-color: #DDE5EE !important; --mode-accent: #3B82F6; --mode-accent-bold: #2563EB; --mode-page: #DDE5EE; }
+body.gt-weather-on.gt-w-snow   { background-color: #E8EEF6 !important; --mode-accent: #60A5FA; --mode-accent-bold: #3B82F6; --mode-page: #E8EEF6; }
+body.gt-weather-on.gt-w-sakura { background-color: #FBE9EE !important; --mode-accent: #EC4899; --mode-accent-bold: #DB2777; --mode-page: #FBE9EE; }
+body.gt-weather-on.gt-w-summer { background-color: #FAF1DC !important; --mode-accent: #F59E0B; --mode-accent-bold: #D97706; --mode-page: #FAF1DC; }
+/* Aurora + Stars always force dark (handled below) */
+
+/* --- DARK THEME mode tints --- */
+[data-theme="dark"] body.gt-weather-on.gt-w-rain   { background-color: #0A1320 !important; --mode-page: #0A1320; }
+[data-theme="dark"] body.gt-weather-on.gt-w-snow   { background-color: #0B1424 !important; --mode-page: #0B1424; }
+[data-theme="dark"] body.gt-weather-on.gt-w-sakura { background-color: #1A0F18 !important; --mode-accent: #F472B6; --mode-accent-bold: #EC4899; --mode-page: #1A0F18; }
+[data-theme="dark"] body.gt-weather-on.gt-w-summer { background-color: #1A1308 !important; --mode-accent: #FBBF24; --mode-accent-bold: #F59E0B; --mode-page: #1A1308; }
+
+/* --- ALWAYS-DARK MODES (aurora + stars) --- */
+body.gt-weather-on.gt-w-aurora { background-color: #050918 !important; --mode-accent: #A855F7; --mode-accent-bold: #9333EA; --mode-page: #050918; }
+body.gt-weather-on.gt-w-stars  { background-color: #050310 !important; --mode-accent: #8B5CF6; --mode-accent-bold: #7C3AED; --mode-page: #050310; }
+/* Use light-theme mode-accents kept (aurora/stars look good with purple) */
+
+
+/* ==================================================================
+   3)  GRADIENT OVERLAY — fades video into the mode page bg
+   The color in the gradient must match the body bg color for that
+   mode so the transition is seamless.
+   ================================================================== */
+.gt-weather-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+
+/* LIGHT THEME — fade to the mode's light page bg */
+.gt-weather-backdrop.gt-w-rain   { opacity: 1; background: linear-gradient(180deg, rgba(221,229,238,0) 0%, rgba(221,229,238,0.22) 28%, rgba(221,229,238,0.55) 50%, rgba(221,229,238,0.88) 72%, rgba(221,229,238,1) 88%, rgba(221,229,238,1) 100%); }
+.gt-weather-backdrop.gt-w-snow   { opacity: 1; background: linear-gradient(180deg, rgba(232,238,246,0) 0%, rgba(232,238,246,0.22) 28%, rgba(232,238,246,0.55) 50%, rgba(232,238,246,0.88) 72%, rgba(232,238,246,1) 88%, rgba(232,238,246,1) 100%); }
+.gt-weather-backdrop.gt-w-sakura { opacity: 1; background: linear-gradient(180deg, rgba(251,233,238,0) 0%, rgba(251,233,238,0.22) 28%, rgba(251,233,238,0.55) 50%, rgba(251,233,238,0.88) 72%, rgba(251,233,238,1) 88%, rgba(251,233,238,1) 100%); }
+.gt-weather-backdrop.gt-w-summer { opacity: 1; background: linear-gradient(180deg, rgba(250,241,220,0) 0%, rgba(250,241,220,0.22) 28%, rgba(250,241,220,0.55) 50%, rgba(250,241,220,0.88) 72%, rgba(250,241,220,1) 88%, rgba(250,241,220,1) 100%); }
+.gt-weather-backdrop.gt-w-aurora { opacity: 1; background: linear-gradient(180deg, rgba(5,9,24,0) 0%, rgba(5,9,24,0.28) 28%, rgba(5,9,24,0.62) 50%, rgba(5,9,24,0.92) 72%, rgba(5,9,24,1) 88%, rgba(5,9,24,1) 100%); }
+.gt-weather-backdrop.gt-w-stars  { opacity: 1; background: linear-gradient(180deg, rgba(5,3,16,0) 0%, rgba(5,3,16,0.28) 28%, rgba(5,3,16,0.62) 50%, rgba(5,3,16,0.92) 72%, rgba(5,3,16,1) 88%, rgba(5,3,16,1) 100%); }
+
+/* DARK THEME — fade to the mode's dark page bg */
+[data-theme="dark"] .gt-weather-backdrop.gt-w-rain   { background: linear-gradient(180deg, rgba(10,19,32,0) 0%, rgba(10,19,32,0.30) 28%, rgba(10,19,32,0.65) 50%, rgba(10,19,32,0.92) 72%, rgba(10,19,32,1) 88%, rgba(10,19,32,1) 100%); }
+[data-theme="dark"] .gt-weather-backdrop.gt-w-snow   { background: linear-gradient(180deg, rgba(11,20,36,0) 0%, rgba(11,20,36,0.30) 28%, rgba(11,20,36,0.65) 50%, rgba(11,20,36,0.92) 72%, rgba(11,20,36,1) 88%, rgba(11,20,36,1) 100%); }
+[data-theme="dark"] .gt-weather-backdrop.gt-w-sakura { background: linear-gradient(180deg, rgba(26,15,24,0) 0%, rgba(26,15,24,0.30) 28%, rgba(26,15,24,0.65) 50%, rgba(26,15,24,0.92) 72%, rgba(26,15,24,1) 88%, rgba(26,15,24,1) 100%); }
+[data-theme="dark"] .gt-weather-backdrop.gt-w-summer { background: linear-gradient(180deg, rgba(26,19,8,0) 0%, rgba(26,19,8,0.30) 28%, rgba(26,19,8,0.65) 50%, rgba(26,19,8,0.92) 72%, rgba(26,19,8,1) 88%, rgba(26,19,8,1) 100%); }
+
+
+/* ==================================================================
+   4)  ACCENT TAKEOVER — replace purple with mode color
+   Overrides the existing --accent vars so all buttons / focus rings
+   / active states auto-tint to the weather color.
+   ================================================================== */
+body.gt-weather-on {
+  --accent: var(--mode-accent) !important;
+  --accent-bold: var(--mode-accent-bold) !important;
+  --accent-dim: color-mix(in srgb, var(--mode-accent) 12%, transparent);
+  --accent-glow: color-mix(in srgb, var(--mode-accent) 35%, transparent);
+}
+
+
+/* ==================================================================
+   5)  CARD RECIPE — GFXToolz formula applied to all surfaces
+   Single recipe: 72% opaque + blur 12 + saturate 130%
+   ================================================================== */
+
+/* Pointer-events: never block clicks */
+#gtWeatherCanvas, #gtWeatherBackdrop, #gtWeatherGlass { pointer-events: none !important; }
+
+/* Lift app content above weather layers */
+.app-layout, .s-layout { position: relative; z-index: 3; }
+
+/* --- Card glass recipe (dark-only dashboard) --- */
+body.gt-weather-on .tool-card,
+body.gt-weather-on .stat-card,
+body.gt-weather-on .quick-link,
+body.gt-weather-on .pln-card,
+body.gt-weather-on .upsell-card,
+body.gt-weather-on .s-card,
+body.gt-weather-on .s-stat-card,
+body.gt-weather-on .admin-card,
+body.gt-weather-on .section-block {
+  background: rgba(25, 28, 38, 0.72) !important;
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.20), 0 4px 14px rgba(0,0,0,0.25) !important;
+  color: var(--text-1) !important;
+}
+body.gt-weather-on .tool-card:hover,
+body.gt-weather-on .stat-card:hover,
+body.gt-weather-on .quick-link:hover {
+  background: rgba(35, 38, 52, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.30), 0 12px 32px rgba(0,0,0,0.35) !important;
+  transform: translateY(-2px);
+}
+
+/* --- SIDEBAR + TOPBAR — slightly more opaque + heavier blur --- */
+body.gt-weather-on .sidebar,
+body.gt-weather-on .s-nav {
+  background: rgba(17, 20, 30, 0.78) !important;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 4px 0 24px rgba(0,0,0,0.30) !important;
+}
+
+body.gt-weather-on .topbar,
+body.gt-weather-on .s-topbar {
+  background: rgba(17, 20, 30, 0.55) !important;
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* --- SEARCH + PILLS + BUTTONS — lighter glass --- */
+body.gt-weather-on .search-box,
+body.gt-weather-on .cat-pill,
+body.gt-weather-on .favorites-filter,
+body.gt-weather-on .view-mode-btn,
+body.gt-weather-on .view-toggle,
+body.gt-weather-on .filter-pill,
+body.gt-weather-on .tool-count,
+body.gt-weather-on .tools-count {
+  background: rgba(25, 28, 38, 0.55) !important;
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-1) !important;
+}
+body.gt-weather-on .search-box:hover,
+body.gt-weather-on .cat-pill:hover,
+body.gt-weather-on .favorites-filter:hover {
+  background: rgba(35, 38, 52, 0.75) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Active category pill always uses mode accent */
+body.gt-weather-on .cat-pill.active {
+  background: linear-gradient(135deg, var(--mode-accent-bold), var(--mode-accent)) !important;
+  border-color: rgba(255, 255, 255, 0.40) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--mode-accent) 40%, transparent) !important;
+}
+
+/* Category scroll arrows */
+body.gt-weather-on .cat-scroll-btn {
+  background: rgba(25, 28, 38, 0.85) !important;
+  backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+}
+
+/* Input fields */
+body.gt-weather-on input[type="text"],
+body.gt-weather-on input[type="email"],
+body.gt-weather-on input[type="password"],
+body.gt-weather-on .s-input {
+  background: rgba(25, 28, 38, 0.65) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-1) !important;
+}
+body.gt-weather-on input:focus {
+  border-color: var(--mode-accent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mode-accent) 18%, transparent) !important;
+}
+/* Inputs that are deliberately invisible inside a styled wrapper must opt out:
+   the wrapper already draws the focus ring, so this rule painted a second, small
+   rounded box floating inside it. Needs !important and higher specificity than
+   the rule above to win. Add any future borderless input to this list. */
+body.gt-weather-on .h-lx-in:focus,
+body.gt-weather-on .search-box input:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Tool card banner — let the gradient be subtle so cards look clean */
+body.gt-weather-on .tool-card-banner,
+body.gt-weather-on .tool-banner {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--mode-accent) 18%, transparent),
+    color-mix(in srgb, var(--mode-accent-bold) 10%, transparent)) !important;
+  opacity: 0.85;
+}
+
+
+/* ==================================================================
+   6)  FORCED NIGHT MODE — aurora + stars
+   Even in light theme, these scenes need dark cards so the UI
+   doesn't clash with the cosmic backdrop.
+   ================================================================== */
+htmlhtmlbody.gt-night-mode .sidebar,
+body.gt-night-mode .s-nav {
+  background: rgba(17, 20, 30, 0.82) !important;
+  border-right-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 4px 0 24px rgba(0,0,0,0.35) !important;
+}
+htmlhtmlbody.gt-night-mode .topbar,
+body.gt-night-mode .s-topbar {
+  background: rgba(17, 20, 30, 0.55) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+htmlhtmlhtmlhtmlhtmlhtmlhtmlbody.gt-night-mode .tool-card,
+body.gt-night-mode .stat-card,
+body.gt-night-mode .quick-link,
+body.gt-night-mode .pln-card,
+body.gt-night-mode .upsell-card,
+body.gt-night-mode .s-card,
+body.gt-night-mode .s-stat-card {
+  background: rgba(25, 28, 38, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #f4f4f5 !important;
+}
+htmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlbody.gt-night-mode .cat-pill,
+body.gt-night-mode .favorites-filter,
+body.gt-night-mode .view-mode-btn,
+body.gt-night-mode .view-toggle,
+body.gt-night-mode .filter-pill,
+body.gt-night-mode .search-box,
+body.gt-night-mode .tool-count,
+body.gt-night-mode .tools-count {
+  background: rgba(25, 28, 38, 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f4f4f5 !important;
+}
+
+/* Text overrides for forced night */
+htmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtmlhtml/* ==================================================================
+   7)  TINY EXTRAS — glass-streak overlay (rain/snow), weather button
+   ================================================================== */
+.gt-weather-glass {
+  position: fixed;
+  inset: 0 0 60% 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.gt-weather-glass.gt-g-rain {
+  opacity: 1;
+  background:
+    repeating-linear-gradient(105deg,
+      transparent 0px, transparent 80px,
+      rgba(255,255,255,0.018) 80px, rgba(255,255,255,0.018) 82px);
+}
+.gt-weather-glass.gt-g-snow {
+  opacity: 1;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, transparent 30%, rgba(200,220,255,0.04) 100%);
+}
+
+.topbar-btn.weather-btn { position: relative; }
+.topbar-btn.weather-btn .weather-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mode-accent, var(--accent));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--mode-accent, var(--accent)) 50%, transparent);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all .25s var(--ease);
+}
+[data-weather]:not([data-weather="off"]) .topbar-btn.weather-btn .weather-dot {
+  opacity: 1;
+  transform: scale(1);
+  animation: gt-w-pulse 2s ease-in-out infinite;
+}
+@keyframes gt-w-pulse {
+  0%, 100% { box-shadow: 0 0 8px color-mix(in srgb, var(--mode-accent, var(--accent)) 50%, transparent); }
+  50%      { box-shadow: 0 0 14px var(--mode-accent, var(--accent)), 0 0 18px color-mix(in srgb, var(--mode-accent, var(--accent)) 60%, transparent); }
+}
+
+
+/* ==================================================================
+   8)  WEATHER PANEL UI (the dropdown — unchanged)
+   ================================================================== */
+.weather-panel {
+  width: 320px !important;
+  padding: 0 !important;
+  background: #0c0c14 !important;
+  border: 1px solid var(--border) !important;
+  z-index: 99999 !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.7) !important;
+}
+.weather-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(236,72,153,0.04));
+}
+.weather-title { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 700; color: var(--text-1); letter-spacing: 0.2px; }
+.weather-title i { color: var(--accent); font-size: 15px; filter: drop-shadow(0 0 6px var(--accent-glow)); }
+.weather-sub { font-size: 11.5px; color: var(--text-3); margin-top: 3px; }
+
+.weather-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 12px 12px 8px; }
+.weather-tile {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 10px 4px 8px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-2);
+  font-family: inherit; font-size: 10.5px; font-weight: 600;
+  cursor: pointer; transition: all .2s var(--ease);
+}
+.weather-tile i { font-size: 16px; transition: transform .3s var(--ease); }
+.weather-tile:hover { border-color: var(--accent); color: var(--text-1); background: var(--accent-dim); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(139,92,246,0.18); }
+.weather-tile:hover i { transform: scale(1.15) rotate(-4deg); }
+.weather-tile.active { border-color: transparent; color: #fff; background: linear-gradient(135deg, var(--accent-bold), var(--accent)); box-shadow: 0 6px 18px rgba(139,92,246,0.35); }
+.weather-tile.mode-rain.active   { background: linear-gradient(135deg, #1e3a8a, #38bdf8); }
+.weather-tile.mode-snow.active   { background: linear-gradient(135deg, #475569, #cbd5e1); color: #0f172a; }
+.weather-tile.mode-sakura.active { background: linear-gradient(135deg, #be185d, #f472b6); }
+.weather-tile.mode-aurora.active { background: linear-gradient(135deg, #06b6d4, #a855f7); }
+.weather-tile.mode-summer.active { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #4a2c00; }
+.weather-tile.mode-stars.active  { background: linear-gradient(135deg, #312e81, #8b5cf6); }
+
+.weather-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--border); }
+.weather-row-label { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.weather-row-label i { color: var(--accent); font-size: 12px; width: 14px; text-align: center; }
+.weather-slider { flex: 1; max-width: 150px; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 999px; background: var(--bg-3); outline: none; cursor: pointer; }
+.weather-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg-1); cursor: pointer; box-shadow: 0 2px 8px rgba(139,92,246,0.5); }
+.weather-slider::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg-1); }
+
+.weather-switch { position: relative; cursor: pointer; display: inline-flex; }
+.weather-switch input { display: none; }
+.weather-switch .ws-track { display: inline-block; width: 36px; height: 20px; background: var(--bg-3); border-radius: 999px; position: relative; transition: background .2s var(--ease); }
+.weather-switch .ws-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--text-3); transition: all .22s var(--ease); }
+.weather-switch input:checked + .ws-track { background: linear-gradient(135deg, var(--accent-bold), var(--accent)); }
+.weather-switch input:checked + .ws-track .ws-knob { left: 18px; background: #fff; }
+
+.weather-foot { padding: 10px 16px; font-size: 11px; color: var(--text-3); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+.weather-foot i { color: var(--accent); }
+
+@media (max-width: 600px){
+  .weather-panel { width: 290px !important; right: -20px !important; }
+  .weather-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; padding: 10px; }
+  .weather-tile { padding: 8px 2px 6px; font-size: 9.5px; }
+  .weather-tile i { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce){
+  #gtWeatherCanvas { display: none !important; }
+  .gt-weather-backdrop { transition: none !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   WEATHER × AURORA THEME
+   ──────────────────────────────────────────────────────────────────────────
+   Two things had to change for weather to work with the panelled layout.
+
+   1. The canvas is fixed BEHIND the panels, and the content panel is now
+      opaque — so with weather on you would have seen the effect only in the
+      12px gutter between panels. The panel goes translucent while weather is
+      running and drops its own blooms, so the canvas becomes the room instead
+      of competing with a second one.
+   2. Each mode's page colour is pulled onto the violet/cyan the interface
+      already uses, so switching modes changes the WEATHER rather than
+      redecorating the product.
+   ══════════════════════════════════════════════════════════════════════════ */
+body.gt-weather-on .main-wrap{
+  background-color:rgba(19,18,30,.58) !important;
+  background-image:none !important;
+  -webkit-backdrop-filter:blur(12px) saturate(115%);
+          backdrop-filter:blur(12px) saturate(115%);
+}
+body.gt-weather-on .tool-card{
+  background:rgba(28,26,42,.62);
+  border-color:rgba(255,255,255,.13);
+}
+body.gt-weather-on .tool-card:hover{ background:rgba(38,35,56,.76); }
+
+/* page colours, retuned to the theme rather than to a season */
+[data-theme="dark"] body.gt-weather-on.gt-w-aurora{
+  background-color:#0a0916 !important; --mode-page:#0a0916;
+  --mode-accent:#a78bfa; --mode-accent-bold:#8b5cf6;
+}
+[data-theme="dark"] body.gt-weather-on.gt-w-drift{
+  background-color:#0b0a14 !important; --mode-page:#0b0a14;
+  --mode-accent:#c4b5fd; --mode-accent-bold:#a78bfa;
+}
+[data-theme="dark"] body.gt-weather-on.gt-w-rain{
+  background-color:#0a0b16 !important; --mode-page:#0a0b16;
+  --mode-accent:#818cf8; --mode-accent-bold:#6366f1;
+}
+.gt-weather-backdrop.gt-w-drift{
+  opacity:1;
+  background:linear-gradient(180deg, rgba(11,10,20,0) 0%, rgba(11,10,20,.28) 28%,
+    rgba(11,10,20,.62) 50%, rgba(11,10,20,.92) 72%, rgba(11,10,20,1) 88%);
+}
+.weather-tile.mode-drift.active{ background:linear-gradient(135deg,#7c3aed,#22d3ee); }
+
+/* the blur is the only costly part; weak devices keep the effect, lose the blur */
+html.lite-mode body.gt-weather-on .main-wrap{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  background-color:rgba(19,18,30,.82) !important;
+}

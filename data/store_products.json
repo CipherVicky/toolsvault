@@ -1,0 +1,197 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Figma Professional",
+      "slug": "figma-professional",
+      "category": "Accounts",
+      "short_desc": "Genuine official Figma Professional Plan on your own personal email with Dev Mode & unlimited files.",
+      "description": "Get official Figma Professional subscription directly upgraded on your existing Figma account. Full Dev Mode access, unlimited version history, shared team libraries, and advanced prototyping. Setup completed within 1-3 hours.",
+      "image_url": "https://www.google.com/s2/favicons?domain=figma.com&sz=128",
+      "badge": "Popular",
+      "price_inr": 299,
+      "price_usd": 3.99,
+      "on_request": false,
+      "stock": 150,
+      "is_featured": true,
+      "options": [
+        {
+          "name": "Duration",
+          "values": [
+            "1 Month ($3.99 / \u20b9299)",
+            "6 Months ($19.99 / \u20b91,499)",
+            "1 Year ($34.99 / \u20b92,699)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Canva Pro & Teams Invite",
+      "slug": "canva-pro-invite",
+      "category": "Upgrades",
+      "short_desc": "Official Canva Pro & Teams activation on your personal account. 100M+ stock assets and Magic Studio.",
+      "description": "Unlock everything Canva Pro has to offer on your own existing email account. Access 100+ million photos, videos, audio clips, premium graphics, 1TB cloud storage, Magic Resize, and background remover with full privacy for your designs.",
+      "image_url": "https://www.google.com/s2/favicons?domain=canva.com&sz=128",
+      "badge": "Hot",
+      "price_inr": 199,
+      "price_usd": 2.49,
+      "on_request": false,
+      "stock": 250,
+      "is_featured": true,
+      "options": [
+        {
+          "name": "Validity",
+          "values": [
+            "6 Months ($2.49 / \u20b9199)",
+            "1 Year ($4.49 / \u20b9349)",
+            "Lifetime ($9.99 / \u20b9799)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "ChatGPT Plus & Team Seat",
+      "slug": "chatgpt-plus-seat",
+      "category": "AI Services",
+      "short_desc": "Private ChatGPT Plus seat with GPT-4o, Advanced Voice, Canvas, and image generation.",
+      "description": "High performance private ChatGPT Plus seat. Enjoy GPT-4o, Sora preview, DALL-E 3 image generation, browsing, python code interpreter, and custom GPTs without message caps.",
+      "image_url": "https://www.google.com/s2/favicons?domain=openai.com&sz=128",
+      "badge": "Best Seller",
+      "price_inr": 499,
+      "price_usd": 6.49,
+      "on_request": false,
+      "stock": 80,
+      "is_featured": true,
+      "options": [
+        {
+          "name": "Plan Type",
+          "values": [
+            "1 Month Private ($6.49 / \u20b9499)",
+            "3 Months ($17.99 / \u20b91,399)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Envato Elements 30 Days Slot",
+      "slug": "envato-elements-slot",
+      "category": "Accounts",
+      "short_desc": "Private slot with direct downloads on Envato Elements. Graphic templates, video footage, audio & themes.",
+      "description": "Direct access slot for Envato Elements with commercial licensing. Download unlimited WordPress themes, graphic mockups, sound effects, Premiere Pro templates, and presentation decks.",
+      "image_url": "https://www.google.com/s2/favicons?domain=elements.envato.com&sz=128",
+      "badge": "Instant",
+      "price_inr": 349,
+      "price_usd": 4.49,
+      "on_request": false,
+      "stock": 120,
+      "is_featured": false,
+      "options": [
+        {
+          "name": "Duration",
+          "values": [
+            "1 Month ($4.49 / \u20b9349)",
+            "3 Months ($11.99 / \u20b9899)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Midjourney 15 Fast Hours",
+      "slug": "midjourney-fast-hours",
+      "category": "AI Services",
+      "short_desc": "15 Fast GPU hours for ultra-photorealistic Midjourney V6.1 & Niji 6 image generations.",
+      "description": "Instant delivery Midjourney account with 15 Fast GPU hours. Commercial use rights, stealth mode compatibility, relaxation mode enabled, and web alpha studio interface access.",
+      "image_url": "https://www.google.com/s2/favicons?domain=midjourney.com&sz=128",
+      "badge": "Fast Delivery",
+      "price_inr": 599,
+      "price_usd": 7.99,
+      "on_request": false,
+      "stock": 65,
+      "is_featured": true,
+      "options": [
+        {
+          "name": "GPU Hours",
+          "values": [
+            "15 Fast Hours ($7.99 / \u20b9599)",
+            "30 Fast Hours ($14.99 / \u20b91,149)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "GitHub Copilot Pro 1 Year",
+      "slug": "github-copilot-pro",
+      "category": "Developer",
+      "short_desc": "Official GitHub Copilot Pro activation on your existing personal GitHub username.",
+      "description": "Activate GitHub Copilot Pro on your personal account. Works seamlessly with VS Code, JetBrains IDEs, Neovim, and GitHub.com. Features multi-line completions, Copilot Chat, and code explanation.",
+      "image_url": "https://www.google.com/s2/favicons?domain=github.com&sz=128",
+      "badge": "Dev Choice",
+      "price_inr": 799,
+      "price_usd": 9.99,
+      "on_request": false,
+      "stock": 90,
+      "is_featured": false,
+      "options": [
+        {
+          "name": "Duration",
+          "values": [
+            "1 Year License ($9.99 / \u20b9799)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Freepik Premium 1 Year",
+      "slug": "freepik-premium-license",
+      "category": "Licenses",
+      "short_desc": "Freepik Premium 100 daily downloads with license certificates for commercial client projects.",
+      "description": "Full Freepik Premium authorization allowing 100 vector, PSD, and AI downloads per day with complete download license PDFs for agency or client work.",
+      "image_url": "https://www.google.com/s2/favicons?domain=freepik.com&sz=128",
+      "badge": "",
+      "price_inr": 399,
+      "price_usd": 4.99,
+      "on_request": false,
+      "stock": 140,
+      "is_featured": false,
+      "options": [
+        {
+          "name": "Validity",
+          "values": [
+            "6 Months ($4.99 / \u20b9399)",
+            "1 Year ($7.99 / \u20b9649)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Semrush Guru 30 Days Dedicated",
+      "slug": "semrush-guru-dedicated",
+      "category": "SEO Services",
+      "short_desc": "Semrush Guru package with domain analytics, keyword magic, content marketing, and historical data.",
+      "description": "Dedicated Semrush Guru profile for marketing agencies and SEO professionals. Includes 15 projects, 1,500 tracked keywords, 30,000 daily reports, historical data comparison, and topic research.",
+      "image_url": "https://www.google.com/s2/favicons?domain=semrush.com&sz=128",
+      "badge": "Agency",
+      "price_inr": 899,
+      "price_usd": 11.99,
+      "on_request": false,
+      "stock": 45,
+      "is_featured": true,
+      "options": [
+        {
+          "name": "Subscription",
+          "values": [
+            "30 Days ($11.99 / \u20b9899)",
+            "60 Days ($21.99 / \u20b91,699)"
+          ]
+        }
+      ]
+    }
+  ]
+}
