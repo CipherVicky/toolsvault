@@ -5183,24 +5183,30 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
 .vault-banner-wrap {
   margin: 0 auto 18px;
   width: 100%;
-  max-width: 920px;
+  max-width: 780px;
 }
 .vault-banner-card {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(0, 255, 157, 0.22);
-  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 157, 0.08);
-  background: #091117;
+  border: 1px solid rgba(0, 255, 157, 0.24);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 255, 157, 0.08);
+  background: radial-gradient(ellipse at 50% 40%, #0d1a24 0%, #060b0f 85%);
   display: flex;
   flex-direction: column;
+}
+.vault-banner-picture {
+  display: block;
+  width: 100%;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
 }
 .vault-banner-img {
   width: 100%;
   height: auto;
-  max-height: 125px;
-  object-fit: cover;
-  object-position: center;
+  aspect-ratio: 1700 / 500;
+  object-fit: contain;
   display: block;
 }
 .vault-banner-hud {
@@ -5208,7 +5214,7 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   align-items: center;
   justify-content: space-between;
   padding: 8px 18px;
-  background: rgba(9, 17, 23, 0.96);
+  background: rgba(6, 11, 15, 0.95);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(0, 255, 157, 0.16);
   flex-wrap: wrap;
@@ -5276,8 +5282,35 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   height: 3px;
   background: linear-gradient(90deg, #00ff9d, #00e5ff, #00ff9d);
 }
+.auth-cyber-banner-wrap {
+  width: 100%;
+  line-height: 0;
+  background: radial-gradient(ellipse at 50% 40%, #0d1a24 0%, #060b0f 85%);
+  border-bottom: 1px solid rgba(0, 255, 157, 0.18);
+  padding: 8px 10px 4px;
+}
+.auth-cyber-banner-img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1700 / 500;
+  object-fit: contain;
+  display: block;
+}
+.auth-cyber-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #00ff9d;
+  background: rgba(0, 255, 157, 0.08);
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 255, 157, 0.22);
+}
 .auth-cyber-header {
-  padding: 28px 24px 18px;
+  padding: 16px 24px 18px;
   text-align: center;
 }
 .auth-cyber-shield {
@@ -5472,11 +5505,14 @@ html, body {
 /* ── Tablets & Medium Screens (601px - 1024px) ── */
 @media (max-width: 1024px) {
   .vault-banner-wrap {
-    max-width: 100%;
-    margin-bottom: 14px;
+    max-width: 680px;
+    margin: 0 auto 14px;
   }
   .vault-banner-img {
-    max-height: 105px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1700 / 500;
+    object-fit: contain;
   }
   .vault-banner-hud {
     padding: 7px 14px;
@@ -5534,15 +5570,20 @@ html, body {
     display: none !important;
   }
 
-  /* Compact Home Banner */
+  /* Responsive Home Banner on Mobile */
   .vault-banner-wrap {
+    max-width: 100% !important;
     margin: 0 0 12px 0 !important;
   }
   .vault-banner-card {
     border-radius: 12px !important;
   }
   .vault-banner-img {
-    max-height: 72px !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1700 / 500 !important;
+    object-fit: contain !important;
+    max-height: none !important;
   }
   .vault-banner-hud {
     padding: 7px 10px !important;
@@ -5703,7 +5744,11 @@ html, body {
 /* ── Very Small Phones (<= 380px) ── */
 @media (max-width: 380px) {
   .vault-banner-img {
-    max-height: 52px !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1700 / 500 !important;
+    object-fit: contain !important;
+    max-height: none !important;
   }
   .vault-hud-status {
     font-size: 9px !important;

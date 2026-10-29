@@ -384,7 +384,19 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
         <!-- ── TOOLSVAULT CYBER ACCESS ARSENAL BANNER ────────────────────── -->
         <div class="vault-banner-wrap">
           <div class="vault-banner-card">
-            <img src="/app/img/toolsvault-banner.png" alt="ToolsVault - [ SEC_SUITE // ACCESS ARSENAL ]" class="vault-banner-img">
+            <picture class="vault-banner-picture">
+              <source media="(max-width: 500px)" srcset="/app/img/toolsvault-banner-500.png 1x, /app/img/toolsvault-banner-800.png 2x">
+              <source media="(max-width: 900px)" srcset="/app/img/toolsvault-banner-800.png 1x, /app/img/toolsvault-banner.png 2x">
+              <img src="/app/img/toolsvault-banner.png"
+                   srcset="/app/img/toolsvault-banner-500.png 500w, /app/img/toolsvault-banner-800.png 800w, /app/img/toolsvault-banner.png 1700w"
+                   sizes="(max-width: 600px) 100vw, (max-width: 1024px) 680px, 780px"
+                   alt="ToolsVault - [ SEC_SUITE // ACCESS ARSENAL ]"
+                   class="vault-banner-img"
+                   width="1700"
+                   height="500"
+                   loading="eager"
+                   fetchpriority="high">
+            </picture>
             <div class="vault-banner-hud">
               <div class="vault-hud-status">
                 <span class="vault-hud-dot"></span>
@@ -2774,10 +2786,23 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
       <div id="page-auth" class="page hidden">
         <div class="auth-cyber-container">
           <div class="auth-cyber-card">
+            <div class="auth-cyber-banner-wrap">
+              <picture>
+                <source media="(max-width: 500px)" srcset="/app/img/toolsvault-banner-500.png 1x, /app/img/toolsvault-banner-800.png 2x">
+                <img src="/app/img/toolsvault-banner-800.png"
+                     srcset="/app/img/toolsvault-banner-500.png 500w, /app/img/toolsvault-banner-800.png 800w, /app/img/toolsvault-banner.png 1700w"
+                     sizes="(max-width: 520px) 100vw, 480px"
+                     alt="ToolsVault - [ SEC_SUITE // ACCESS ARSENAL ]"
+                     class="auth-cyber-banner-img"
+                     width="1700"
+                     height="500">
+              </picture>
+            </div>
             <div class="auth-cyber-header">
-              <img src="/app/img/toolsvault-icon.png" alt="ToolsVault Shield" class="auth-cyber-shield">
-              <h1 class="auth-cyber-title">Tools<span>Vault</span></h1>
-              <div class="auth-cyber-subtitle">[ SEC_SUITE // ACCESS ARSENAL ] &bull; ARMED</div>
+              <div class="auth-cyber-badge">
+                <span class="vault-hud-dot"></span>
+                <span>CLEARANCE VERIFICATION &bull; ARMED</span>
+              </div>
             </div>
 
             <!-- Instant 1-Click Demo Login -->
