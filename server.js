@@ -30,14 +30,122 @@ const publicStatsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 
 const storeData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'store_products.json'), 'utf8'));
 
 // ==========================================
-// PERSISTENT USER DATA STORE (Bcrypt + JWT)
+// PERSISTENT USER DATA STORE (JSON Files + Cloud Database Ready)
 // ==========================================
-const USERS_FILE = path.join(__dirname, 'data', 'users.json');
+const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+function loadData(filename, fallback) {
+  try {
+    const filePath = path.join(DATA_DIR, filename);
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      const parsed = JSON.parse(content);
+      if (parsed !== null && parsed !== undefined) return parsed;
+    }
+  } catch (e) {
+    console.error(`Error loading ${filename}:`, e.message);
+  }
+  saveData(filename, fallback);
+  return fallback;
+}
+
+function saveData(filename, data) {
+  try {
+    const filePath = path.join(DATA_DIR, filename);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    console.error(`Error saving ${filename}:`, e.message);
+  }
+}
+
+// ── Cloud Database Connection (PostgreSQL / Neon / Supabase / Render Postgres) ──
+let pgPool = null;
+
+if (process.env.DATABASE_URL) {
+  try {
+    const { Pool } = require('pg');
+    pgPool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
+    });
+
+    pgPool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        first_name VARCHAR(100),
+        last_name VARCHAR(100),
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        plan VARCHAR(50) DEFAULT 'premium',
+        role VARCHAR(50) DEFAULT 'user',
+        credits INTEGER DEFAULT 1500,
+        avatar_url TEXT,
+        verified BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+    `).then(async () => {
+      console.log('⚡ Connected to PostgreSQL Database successfully!');
+      try {
+        const { rows } = await pgPool.query('SELECT * FROM users ORDER BY id ASC');
+        if (rows.length > 0) {
+          users = rows;
+          saveData('users.json', users);
+          console.log(`📦 Loaded ${rows.length} users from PostgreSQL database.`);
+        } else if (users.length > 0) {
+          for (const u of users) {
+            await pgPool.query(
+              `INSERT INTO users (id, first_name, last_name, email, password_hash, plan, role, credits, avatar_url, verified, created_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+               ON CONFLICT (email) DO NOTHING`,
+              [u.id, u.first_name, u.last_name, u.email, u.password_hash, u.plan, u.role, u.credits, u.avatar_url, u.verified, u.created_at]
+            );
+          }
+          console.log(`📦 Seeded ${users.length} initial users into PostgreSQL.`);
+        }
+      } catch (err) {
+        console.error('Postgres table sync error:', err.message);
+      }
+    }).catch(err => {
+      console.error('⚠️ PostgreSQL connection failed, using local persistent data files:', err.message);
+      pgPool = null;
+    });
+  } catch (err) {
+    console.warn('⚠️ pg driver error:', err.message);
+  }
+}
+
+async function syncUsersToPostgres(usersList) {
+  if (!pgPool) return;
+  try {
+    for (const u of usersList) {
+      await pgPool.query(
+        `INSERT INTO users (id, first_name, last_name, email, password_hash, plan, role, credits, avatar_url, verified, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+         ON CONFLICT (email) DO UPDATE SET
+           first_name = EXCLUDED.first_name,
+           last_name = EXCLUDED.last_name,
+           password_hash = EXCLUDED.password_hash,
+           plan = EXCLUDED.plan,
+           role = EXCLUDED.role,
+           credits = EXCLUDED.credits,
+           avatar_url = EXCLUDED.avatar_url,
+           verified = EXCLUDED.verified`,
+        [u.id, u.first_name, u.last_name, u.email, u.password_hash, u.plan, u.role, u.credits, u.avatar_url, u.verified, u.created_at]
+      );
+    }
+  } catch (err) {
+    console.error('syncUsersToPostgres error:', err.message);
+  }
+}
 
 function loadUsers() {
   try {
-    if (fs.existsSync(USERS_FILE)) {
-      const content = fs.readFileSync(USERS_FILE, 'utf8');
+    const filePath = path.join(DATA_DIR, 'users.json');
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
       const parsed = JSON.parse(content);
       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
@@ -63,31 +171,34 @@ function loadUsers() {
       created_at: '2026-01-15T10:00:00.000Z'
     }
   ];
-  saveUsers(initialUsers);
+  saveData('users.json', initialUsers);
   return initialUsers;
 }
 
 function saveUsers(usersList) {
-  try {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(usersList, null, 2), 'utf8');
-  } catch (e) {
-    console.error('Failed to save users.json:', e.message);
-  }
+  saveData('users.json', usersList);
+  syncUsersToPostgres(usersList);
 }
 
-// In-Memory Database for State Management & Sync
+// In-Memory Database with Automatic File Persistence
 let users = loadUsers();
 
-let userFavorites = { 1: [1, 6, 42, 57] };
+let userFavorites = loadData('user_favorites.json', { 1: [1, 6, 42, 57] });
+function saveFavorites() { saveData('user_favorites.json', userFavorites); }
+
 let pendingVerifications = {};
-let userPurchasedTools = { 1: [1, 2, 3, 4, 5, 6, 7, 8, 42, 57, 200, 201, 202] };
-let communityRequests = [
+
+let userPurchasedTools = loadData('user_purchased.json', { 1: [1, 2, 3, 4, 5, 6, 7, 8, 42, 57, 200, 201, 202] });
+function savePurchased() { saveData('user_purchased.json', userPurchasedTools); }
+
+let communityRequests = loadData('community_requests.json', [
   { id: 1, tool_name: 'Leonardo.Ai Ultra', category: 'AI Tools', votes: 47, status: 'in-review', created_at: '2026-06-10' },
   { id: 2, tool_name: 'Perplexity Pro Team', category: 'AI Tools', votes: 89, status: 'planned', created_at: '2026-06-08' },
   { id: 3, tool_name: 'CapCut Pro Desktop', category: 'Video Tools', votes: 112, status: 'in-progress', created_at: '2026-06-05' }
-];
+]);
+function saveCommunityRequests() { saveData('community_requests.json', communityRequests); }
 
-let storeOrders = [
+let storeOrders = loadData('store_orders.json', [
   {
     id: 'ORD-9821',
     user_id: 1,
@@ -98,9 +209,10 @@ let storeOrders = [
     status: 'completed',
     created_at: new Date(Date.now() - 86400000 * 3).toISOString()
   }
-];
+]);
+function saveStoreOrders() { saveData('store_orders.json', storeOrders); }
 
-let affiliateData = {
+let affiliateData = loadData('affiliate_data.json', {
   1: {
     registered: true,
     code: 'VAULT-ALEX',
@@ -123,12 +235,14 @@ let affiliateData = {
       ]
     }
   }
-};
+});
+function saveAffiliateData() { saveData('affiliate_data.json', affiliateData); }
 
-let affiliatePayouts = [
+let affiliatePayouts = loadData('affiliate_payouts.json', [
   { id: 'PAY-104', amount_usd: 120.00, status: 'completed', method: 'PayPal', date: '2026-05-15' },
   { id: 'PAY-105', amount_usd: 264.00, status: 'completed', method: 'PayPal', date: '2026-06-01' }
-];
+]);
+function saveAffiliatePayouts() { saveData('affiliate_payouts.json', affiliatePayouts); }
 
 // Sanitize user for safe response (never send password or hash to client)
 function toSafeUser(user) {
@@ -396,6 +510,7 @@ app.post('/api/requests', optionalAuth, (req, res) => {
     created_at: new Date().toISOString()
   };
   communityRequests.unshift(newReq);
+  saveCommunityRequests();
   res.json({ success: true, request: newReq });
 });
 
@@ -456,6 +571,8 @@ app.post('/api/auth/register', (req, res) => {
   // Initialize defaults for new user
   userFavorites[newUser.id] = [1, 6, 42, 57];
   userPurchasedTools[newUser.id] = [1, 2, 3, 4, 5, 6, 7, 8, 42, 57, 200, 201, 202];
+  saveFavorites();
+  savePurchased();
 
   const token = generateToken(newUser);
   res.json({
@@ -516,6 +633,29 @@ app.get('/api/user/profile', authMiddleware, (req, res) => {
   res.json(toSafeUser(req.user));
 });
 
+app.post('/api/user/profile', authMiddleware, (req, res) => {
+  const { first_name, last_name, avatar_url } = req.body;
+  if (first_name !== undefined) req.user.first_name = String(first_name).trim();
+  if (last_name !== undefined) req.user.last_name = String(last_name).trim();
+  if (avatar_url !== undefined) req.user.avatar_url = String(avatar_url).trim();
+  saveUsers(users);
+  res.json({ success: true, user: toSafeUser(req.user) });
+});
+
+app.post('/api/user/change-password', authMiddleware, (req, res) => {
+  const { current_password, new_password } = req.body;
+  if (!new_password || new_password.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters long' });
+  }
+  const match = bcrypt.compareSync(current_password, req.user.password_hash);
+  if (!match) {
+    return res.status(400).json({ error: 'Incorrect current password' });
+  }
+  req.user.password_hash = bcrypt.hashSync(new_password, 10);
+  saveUsers(users);
+  res.json({ success: true, message: 'Password updated successfully' });
+});
+
 app.get('/api/user/credits', authMiddleware, (req, res) => {
   res.json({
     credits: req.user.credits !== undefined ? req.user.credits : 1500,
@@ -551,6 +691,7 @@ app.post('/api/favorites/:toolId', authMiddleware, (req, res) => {
   if (!userFavorites[req.user.id]) userFavorites[req.user.id] = [];
   if (!userFavorites[req.user.id].includes(toolId)) {
     userFavorites[req.user.id].push(toolId);
+    saveFavorites();
   }
   res.json({ success: true, favorites: userFavorites[req.user.id] });
 });
@@ -559,6 +700,7 @@ app.delete('/api/favorites/:toolId', authMiddleware, (req, res) => {
   const toolId = parseInt(req.params.toolId);
   if (userFavorites[req.user.id]) {
     userFavorites[req.user.id] = userFavorites[req.user.id].filter(id => id !== toolId);
+    saveFavorites();
   }
   res.json({ success: true, favorites: userFavorites[req.user.id] || [] });
 });
@@ -713,6 +855,7 @@ app.post('/api/store/orders', authMiddleware, (req, res) => {
   };
 
   storeOrders.unshift(order);
+  saveStoreOrders();
   res.json({ success: true, order });
 });
 
@@ -767,6 +910,7 @@ app.post('/api/affiliate/register', authMiddleware, (req, res) => {
       ]
     }
   };
+  saveAffiliateData();
   res.json(affiliateData[req.user.id]);
 });
 
@@ -801,6 +945,8 @@ app.post('/api/affiliate/payout', authMiddleware, (req, res) => {
   affiliatePayouts.unshift(payout);
   aff.paid_usd += aff.unpaid_usd;
   aff.unpaid_usd = 0;
+  saveAffiliateData();
+  saveAffiliatePayouts();
   res.json({ success: true, payout });
 });
 

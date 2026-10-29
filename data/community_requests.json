@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "tool_name": "Leonardo.Ai Ultra",
+    "category": "AI Tools",
+    "votes": 47,
+    "status": "in-review",
+    "created_at": "2026-06-10"
+  },
+  {
+    "id": 2,
+    "tool_name": "Perplexity Pro Team",
+    "category": "AI Tools",
+    "votes": 89,
+    "status": "planned",
+    "created_at": "2026-06-08"
+  },
+  {
+    "id": 3,
+    "tool_name": "CapCut Pro Desktop",
+    "category": "Video Tools",
+    "votes": 112,
+    "status": "in-progress",
+    "created_at": "2026-06-05"
+  }
+]

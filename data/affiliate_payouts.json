@@ -1,0 +1,16 @@
+[
+  {
+    "id": "PAY-104",
+    "amount_usd": 120,
+    "status": "completed",
+    "method": "PayPal",
+    "date": "2026-05-15"
+  },
+  {
+    "id": "PAY-105",
+    "amount_usd": 264,
+    "status": "completed",
+    "method": "PayPal",
+    "date": "2026-06-01"
+  }
+]

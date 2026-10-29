@@ -566,7 +566,7 @@ function closeSidebar() {
 
 function handleAccountClick() {
   if (!currentUser) {
-    navigateTo('/login');
+    navigateToAuth(null, 'login');
   } else {
     toggleDropdown('accountDropdown');
   }

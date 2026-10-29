@@ -1,0 +1,39 @@
+{
+  "1": {
+    "registered": true,
+    "code": "VAULT-ALEX",
+    "link": "https://toolsvault.com/ref/VAULT-ALEX",
+    "tier": {
+      "name": "Pro Partner",
+      "rate": 20
+    },
+    "payout_method": "PayPal (alex.rivera@example.com)",
+    "unpaid_usd": 148.5,
+    "unpaid_inr": 12450,
+    "paid_usd": 384,
+    "paid_inr": 32180,
+    "clicks": 218,
+    "signups": 42,
+    "total_paid_sales": 18,
+    "config": {
+      "min_payout": 20,
+      "tiers": [
+        {
+          "name": "Starter",
+          "rate": 15,
+          "min": 0
+        },
+        {
+          "name": "Pro Partner",
+          "rate": 20,
+          "min": 10
+        },
+        {
+          "name": "VIP Elite",
+          "rate": 30,
+          "min": 50
+        }
+      ]
+    }
+  }
+}

@@ -100,7 +100,7 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
             <i class="fas fa-bolt"></i> 1-Click Demo Login (demo@toolsvault.com)
           </button>
         </div>
-        <form id="loginForm">
+        <form id="loginForm" onsubmit="handleLogin(event)">
           <div class="form-group">
             <div class="input-icon">
               <i class="fas fa-envelope"></i>
@@ -124,7 +124,7 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
           <h2>Initialize Clearance</h2>
           <p style="font-family:ui-monospace,monospace;font-size:11px;color:var(--accent);letter-spacing:.08em">[ REGISTER NEW OPERATIVE ]</p>
         </div>
-        <form id="registerForm">
+        <form id="registerForm" onsubmit="handleRegister(event)">
           <div class="form-row">
             <div class="form-group">
               <div class="input-icon">
@@ -598,7 +598,7 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
             <div class="lock-icon-wrap"><i class="fas fa-lock"></i></div>
             <h3>Sign in to access tools</h3>
             <p>Create an account or sign in to start using premium tools.</p>
-            <button class="btn btn-glow" onclick="window.location.href='/login'">
+            <button class="btn btn-glow" onclick="navigateToAuth('/app/tools', 'login')">
               <i class="fas fa-right-to-bracket"></i> Sign In to Continue
             </button>
           </div>

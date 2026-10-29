@@ -6,8 +6,20 @@ let _resendTimerInterval = null;
 
 async function handleLogin(e, force) {
   if (e && e.preventDefault) e.preventDefault();
-  const email    = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
+  const emailInput = document.getElementById('loginEmail');
+  const passInput  = document.getElementById('loginPassword');
+  const errEl      = document.getElementById('loginError');
+  const submitBtn  = document.querySelector('#loginForm button[type="submit"]');
+  if (!emailInput || !passInput) return;
+  const email    = emailInput.value.trim();
+  const password = passInput.value;
+  if (errEl) errEl.classList.add('hidden');
+
+  const origBtnText = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+  }
 
   try {
     const res = await api('/api/auth/login', 'POST', { email, password, force: !!force });
@@ -30,17 +42,40 @@ async function handleLogin(e, force) {
       if (b) b.onclick = () => handleLogin(null, true);
       return;
     }
-    document.getElementById('loginError').textContent = err.message;
-    document.getElementById('loginError').classList.remove('hidden');
+    if (errEl) {
+      errEl.textContent = err.message || 'Invalid credentials';
+      errEl.classList.remove('hidden');
+    } else {
+      toast(err.message, 'error');
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origBtnText;
+    }
   }
 }
 
 async function handleRegister(e) {
-  e.preventDefault();
-  const first_name = document.getElementById('regFirstName').value.trim();
-  const last_name  = document.getElementById('regLastName').value.trim();
-  const email      = document.getElementById('regEmail').value;
-  const password   = document.getElementById('regPassword').value;
+  if (e && e.preventDefault) e.preventDefault();
+  const fnInput   = document.getElementById('regFirstName');
+  const lnInput   = document.getElementById('regLastName');
+  const emailInput = document.getElementById('regEmail');
+  const passInput  = document.getElementById('regPassword');
+  const errEl      = document.getElementById('regError');
+  const submitBtn  = document.querySelector('#registerForm button[type="submit"]');
+  if (!fnInput || !emailInput || !passInput) return;
+  const first_name = fnInput.value.trim();
+  const last_name  = (lnInput ? lnInput.value : '').trim();
+  const email      = emailInput.value.trim();
+  const password   = passInput.value;
+  if (errEl) errEl.classList.add('hidden');
+
+  const origBtnText = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initializing Account...';
+  }
 
   try {
     const res = await api('/api/auth/register', 'POST', { first_name, last_name, email, password });
@@ -53,8 +88,17 @@ async function handleRegister(e) {
       openVerifyModal(res.email);
     }
   } catch (err) {
-    document.getElementById('regError').textContent = err.message;
-    document.getElementById('regError').classList.remove('hidden');
+    if (errEl) {
+      errEl.textContent = err.message || 'Registration failed.';
+      errEl.classList.remove('hidden');
+    } else {
+      toast(err.message, 'error');
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origBtnText;
+    }
   }
 }
 
@@ -422,10 +466,20 @@ function switchAuthTab(tab) {
 
 async function handlePortalLogin(e) {
   if (e && e.preventDefault) e.preventDefault();
-  const email = document.getElementById('portalLoginEmail').value.trim();
-  const password = document.getElementById('portalLoginPassword').value;
-  const errEl = document.getElementById('portalLoginError');
+  const emailInput = document.getElementById('portalLoginEmail');
+  const passInput  = document.getElementById('portalLoginPassword');
+  const errEl      = document.getElementById('portalLoginError');
+  const submitBtn  = document.querySelector('#authPortalLoginForm button[type="submit"]');
+  if (!emailInput || !passInput) return;
+  const email    = emailInput.value.trim();
+  const password = passInput.value;
   if (errEl) errEl.classList.add('hidden');
+
+  const origBtnText = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating Clearance...';
+  }
 
   try {
     const res = await api('/api/auth/login', 'POST', { email, password });
@@ -437,17 +491,34 @@ async function handlePortalLogin(e) {
     } else {
       toast(err.message, 'error');
     }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origBtnText;
+    }
   }
 }
 
 async function handlePortalRegister(e) {
   if (e && e.preventDefault) e.preventDefault();
-  const first_name = document.getElementById('portalRegFirstName').value.trim();
-  const last_name  = document.getElementById('portalRegLastName').value.trim();
-  const email      = document.getElementById('portalRegEmail').value.trim();
-  const password   = document.getElementById('portalRegPassword').value;
+  const fnInput   = document.getElementById('portalRegFirstName');
+  const lnInput   = document.getElementById('portalRegLastName');
+  const emailInput = document.getElementById('portalRegEmail');
+  const passInput  = document.getElementById('portalRegPassword');
   const errEl      = document.getElementById('portalRegError');
+  const submitBtn  = document.querySelector('#authPortalRegForm button[type="submit"]');
+  if (!fnInput || !emailInput || !passInput) return;
+  const first_name = fnInput.value.trim();
+  const last_name  = (lnInput ? lnInput.value : '').trim();
+  const email      = emailInput.value.trim();
+  const password   = passInput.value;
   if (errEl) errEl.classList.add('hidden');
+
+  const origBtnText = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Clearance & Entering...';
+  }
 
   try {
     const res = await api('/api/auth/register', 'POST', { first_name, last_name, email, password });
@@ -458,6 +529,11 @@ async function handlePortalRegister(e) {
       errEl.classList.remove('hidden');
     } else {
       toast(err.message, 'error');
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = origBtnText;
     }
   }
 }
