@@ -2614,15 +2614,18 @@ html.lite-mode .nav-badge-new::after { animation: none; display: none; }
 .sidebar::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 /* ============ RESPONSIVE ============ */
-/* Mobile sidebar drawer backdrop — only ever visible on small screens */
+/* Mobile sidebar drawer backdrop — zero blur, crystal clear dark overlay */
 .sidebar-backdrop {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-  z-index: 55; opacity: 0; pointer-events: none;
-  transition: opacity .25s var(--ease);
+  background: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  z-index: 85 !important;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
 }
-.sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
+.sidebar-backdrop.show { opacity: 1 !important; pointer-events: auto !important; }
 @media (min-width: 901px) { .sidebar-backdrop { display: none !important; } }
 
 @media (max-width: 1024px) {
@@ -2633,12 +2636,29 @@ html.lite-mode .nav-badge-new::after { animation: none; display: none; }
 }
 @media (max-width: 900px) {
   .sidebar {
-    position: fixed; z-index: 60; height: 100vh;
-    transform: translateX(-100%);
-    transition: transform .25s var(--ease);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    width: 270px !important;
+    max-width: 82vw !important;
+    background: #091117 !important;
+    border-right: 1px solid rgba(0, 255, 157, 0.3) !important;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 255, 157, 0.12) !important;
+    z-index: 90 !important;
+    transform: translateX(-100%) !important;
+    transition: transform .28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-toggle { display: block; }
+  .sidebar.open { transform: translateX(0) !important; }
+  .sidebar-toggle { display: flex !important; align-items: center; justify-content: center; cursor: pointer; }
+  .sidebar-close-btn { display: flex !important; }
   .tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .hero-title { font-size: 36px; }
   .tool-detail-hero { padding: 22px; }
@@ -5179,18 +5199,19 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
    TOOLSVAULT CYBER ACCESS SUITE & ARSENAL STYLING
    ========================================================================== */
 
-/* ── Compact & Responsive Banner Wrap on Home ── */
+/* ── Full-Width Responsive Cyber Access Arsenal Banner ── */
 .vault-banner-wrap {
-  margin: 0 auto 18px;
+  margin: 0 0 20px 0;
   width: 100%;
-  max-width: 780px;
+  max-width: 100%;
 }
 .vault-banner-card {
   position: relative;
-  border-radius: 14px;
+  width: 100%;
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid rgba(0, 255, 157, 0.24);
-  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 255, 157, 0.08);
+  border: 1px solid rgba(0, 255, 157, 0.28);
+  box-shadow: 0 16px 44px -10px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 255, 157, 0.12);
   background: radial-gradient(ellipse at 50% 40%, #0d1a24 0%, #060b0f 85%);
   display: flex;
   flex-direction: column;
@@ -5213,20 +5234,26 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 18px;
-  background: rgba(6, 11, 15, 0.95);
+  padding: 10px 22px;
+  background: rgba(6, 11, 15, 0.96);
   backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(0, 255, 157, 0.16);
+  border-top: 1px solid rgba(0, 255, 157, 0.18);
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
+}
+.vault-hud-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 .vault-hud-status {
   display: flex;
   align-items: center;
   gap: 8px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 11.5px;
-  letter-spacing: 0.07em;
+  font-size: 12px;
+  letter-spacing: 0.08em;
   color: var(--text-2);
 }
 .vault-hud-status b {
@@ -5234,20 +5261,49 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   font-weight: 700;
 }
 .vault-hud-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #00ff9d;
-  box-shadow: 0 0 8px #00ff9d;
+  box-shadow: 0 0 10px #00ff9d, 0 0 18px rgba(0, 255, 157, 0.5);
   animation: pulse-dot 1.8s infinite;
+}
+.vault-hud-badge {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  padding: 3px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .vault-hud-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .vault-hud-actions .btn {
-  padding: 6px 14px;
+  padding: 8px 18px;
+  font-size: 12.5px;
+  border-radius: 8px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.vault-btn-ai {
+  border: 1px solid rgba(0, 255, 157, 0.35);
+  color: var(--text-1);
+}
+.vault-btn-ai:hover {
+  border-color: #00ff9d;
+  background: rgba(0, 255, 157, 0.1);
+  color: #00ff9d;
+}
   font-size: 12px;
   border-radius: 8px;
 }
@@ -5505,8 +5561,9 @@ html, body {
 /* ── Tablets & Medium Screens (601px - 1024px) ── */
 @media (max-width: 1024px) {
   .vault-banner-wrap {
-    max-width: 680px;
-    margin: 0 auto 14px;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 16px 0 !important;
   }
   .vault-banner-img {
     width: 100%;
@@ -5515,14 +5572,14 @@ html, body {
     object-fit: contain;
   }
   .vault-banner-hud {
-    padding: 7px 14px;
+    padding: 8px 16px;
   }
   .vault-hud-status {
-    font-size: 11px;
+    font-size: 11.5px;
   }
   .vault-hud-actions .btn {
-    padding: 6px 12px;
-    font-size: 11.5px;
+    padding: 7px 14px;
+    font-size: 12px;
   }
   .h-deck {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -5570,8 +5627,9 @@ html, body {
     display: none !important;
   }
 
-  /* Responsive Home Banner on Mobile */
+  /* Responsive Full-Width Home Banner on Mobile */
   .vault-banner-wrap {
+    width: 100% !important;
     max-width: 100% !important;
     margin: 0 0 12px 0 !important;
   }
@@ -5586,7 +5644,33 @@ html, body {
     max-height: none !important;
   }
   .vault-banner-hud {
-    padding: 7px 10px !important;
+    padding: 8px 10px !important;
+    gap: 8px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .vault-hud-left {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  .vault-hud-status {
+    font-size: 10px !important;
+  }
+  .vault-hud-badge {
+    display: none !important;
+  }
+  .vault-hud-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100% !important;
+    gap: 6px !important;
+  }
+  .vault-hud-actions .btn {
+    padding: 7px 8px !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
     gap: 8px !important;
     flex-direction: column !important;
     align-items: stretch !important;

@@ -195,10 +195,15 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sidebar-logo" style="display:flex;align-items:center;gap:11px;cursor:pointer;" onclick="showPage('home')">
-        <img src="/app/img/toolsvault-icon.png" alt="ToolsVault" class="logo-img" style="width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(0,255,157,0.5));">
-        <span style="font-weight:800;letter-spacing:-0.02em;font-size:17px;color:#fff;">Tools<span style="color:var(--accent);">Vault</span></span>
-        <span class="vault-status-dot" title="Access Armed" style="width:7px;height:7px;background:#00ff9d;border-radius:50%;box-shadow:0 0 8px #00ff9d;display:inline-block;margin-left:auto;"></span>
+      <div class="sidebar-logo" style="display:flex;align-items:center;gap:11px;">
+        <div style="display:flex;align-items:center;gap:11px;cursor:pointer;" onclick="showPage('home');closeSidebar();">
+          <img src="/app/img/toolsvault-icon.png" alt="ToolsVault" class="logo-img" style="width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(0,255,157,0.5));">
+          <span style="font-weight:800;letter-spacing:-0.02em;font-size:17px;color:#fff;">Tools<span style="color:var(--accent);">Vault</span></span>
+          <span class="vault-status-dot" title="Access Armed" style="width:7px;height:7px;background:#00ff9d;border-radius:50%;box-shadow:0 0 8px #00ff9d;display:inline-block;margin-left:6px;"></span>
+        </div>
+        <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close menu" style="margin-left:auto;">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
 
       <nav class="sidebar-nav">
@@ -389,7 +394,7 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
               <source media="(max-width: 900px)" srcset="/app/img/toolsvault-banner-800.png 1x, /app/img/toolsvault-banner.png 2x">
               <img src="/app/img/toolsvault-banner.png"
                    srcset="/app/img/toolsvault-banner-500.png 500w, /app/img/toolsvault-banner-800.png 800w, /app/img/toolsvault-banner.png 1700w"
-                   sizes="(max-width: 600px) 100vw, (max-width: 1024px) 680px, 780px"
+                   sizes="100vw"
                    alt="ToolsVault - [ SEC_SUITE // ACCESS ARSENAL ]"
                    class="vault-banner-img"
                    width="1700"
@@ -398,16 +403,18 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
                    fetchpriority="high">
             </picture>
             <div class="vault-banner-hud">
-              <div class="vault-hud-status">
+              <div class="vault-hud-left">
                 <span class="vault-hud-dot"></span>
-                <span>SYSTEM STATUS: <b>ARMED</b> // 109+ PREMIUM SUITES &amp; AI MODELS</span>
+                <span class="vault-hud-status">SYSTEM STATUS: <b>ARMED</b> // 109+ PREMIUM SUITES &amp; AI MODELS</span>
+                <span class="vault-hud-badge"><i class="fas fa-shield-halved"></i> 256-BIT ENCRYPTION</span>
+                <span class="vault-hud-badge"><i class="fas fa-bolt"></i> DIRECT ACCESS</span>
               </div>
               <div class="vault-hud-actions">
                 <button class="btn btn-primary" onclick="showPage('tools')">
                   <i class="fas fa-shield-halved"></i> Access Arsenal
                 </button>
-                <button class="btn btn-outline" onclick="showPage('ai-studio')" style="border:1px solid rgba(0,255,157,0.35);color:var(--text-1);font-size:12.5px;padding:8px 16px;border-radius:8px;font-weight:600;">
-                  <i class="fas fa-wand-magic-sparkles" style="color:var(--accent);"></i> AI Studio
+                <button class="btn btn-outline vault-btn-ai" onclick="showPage('ai-studio')">
+                  <i class="fas fa-wand-magic-sparkles"></i> AI Studio
                 </button>
               </div>
             </div>

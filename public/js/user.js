@@ -539,9 +539,17 @@ function toggleSidebar() {
     bd.id = 'sidebarBackdrop';
     bd.className = 'sidebar-backdrop';
     bd.addEventListener('click', closeSidebar);
+    bd.addEventListener('touchstart', function(e) {
+      closeSidebar();
+    }, { passive: true });
     document.body.appendChild(bd);
   }
   bd.classList.toggle('show', open);
+  if (open) {
+    document.body.style.overflowY = 'hidden';
+  } else {
+    document.body.style.overflowY = '';
+  }
 }
 
 function closeSidebar() {
@@ -549,6 +557,7 @@ function closeSidebar() {
   if (sb) sb.classList.remove('open');
   const bd = document.getElementById('sidebarBackdrop');
   if (bd) bd.classList.remove('show');
+  document.body.style.overflowY = '';
 }
 
 function handleAccountClick() {
