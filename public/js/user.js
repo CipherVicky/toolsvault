@@ -464,7 +464,10 @@ function showPage(page, extra) {
     history.pushState({ page, slug }, '', newUrl);
   }
 
-  if (!target || target === current) return;
+  if (!target || target === current) {
+    closeSidebar();
+    return;
+  }
 
   if (current) {
     current.style.transition = 'opacity .13s ease-out';
@@ -532,23 +535,24 @@ function _revealPage(target, page) {
 function toggleSidebar() {
   const sb = document.querySelector('.sidebar');
   if (!sb) return;
-  const open = sb.classList.toggle('open');
-  let bd = document.getElementById('sidebarBackdrop');
-  if (!bd) {
-    bd = document.createElement('div');
-    bd.id = 'sidebarBackdrop';
-    bd.className = 'sidebar-backdrop';
-    bd.addEventListener('click', closeSidebar);
-    bd.addEventListener('touchstart', function(e) {
-      closeSidebar();
-    }, { passive: true });
-    document.body.appendChild(bd);
-  }
-  bd.classList.toggle('show', open);
-  if (open) {
-    document.body.style.overflowY = 'hidden';
+  const isCurrentlyOpen = sb.classList.contains('open');
+  if (isCurrentlyOpen) {
+    closeSidebar();
   } else {
-    document.body.style.overflowY = '';
+    sb.classList.add('open');
+    let bd = document.getElementById('sidebarBackdrop');
+    if (!bd) {
+      bd = document.createElement('div');
+      bd.id = 'sidebarBackdrop';
+      bd.className = 'sidebar-backdrop';
+      bd.addEventListener('click', closeSidebar);
+      bd.addEventListener('touchstart', function(e) {
+        closeSidebar();
+      }, { passive: true });
+      document.body.appendChild(bd);
+    }
+    bd.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 }
 
@@ -557,7 +561,7 @@ function closeSidebar() {
   if (sb) sb.classList.remove('open');
   const bd = document.getElementById('sidebarBackdrop');
   if (bd) bd.classList.remove('show');
-  document.body.style.overflowY = '';
+  document.body.style.overflow = '';
 }
 
 function handleAccountClick() {
