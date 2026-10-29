@@ -532,37 +532,87 @@ function _revealPage(target, page) {
   closeSidebar();
 }
 
-function toggleSidebar() {
+function toggleSidebar(e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
   const sb = document.querySelector('.sidebar');
   if (!sb) return;
-  const isCurrentlyOpen = sb.classList.contains('open');
-  if (isCurrentlyOpen) {
-    closeSidebar();
+  if (sb.classList.contains('open')) {
+    closeSidebar(e);
   } else {
-    sb.classList.add('open');
-    let bd = document.getElementById('sidebarBackdrop');
-    if (!bd) {
-      bd = document.createElement('div');
-      bd.id = 'sidebarBackdrop';
-      bd.className = 'sidebar-backdrop';
-      bd.addEventListener('click', closeSidebar);
-      bd.addEventListener('touchstart', function(e) {
-        closeSidebar();
-      }, { passive: true });
-      document.body.appendChild(bd);
-    }
-    bd.classList.add('show');
-    document.body.style.overflow = 'hidden';
+    openSidebar(e);
   }
 }
 
-function closeSidebar() {
+function openSidebar(e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
+  const sb = document.querySelector('.sidebar');
+  if (!sb) return;
+  sb.classList.add('open');
+
+  let bd = document.getElementById('sidebarBackdrop');
+  if (!bd) {
+    bd = document.createElement('div');
+    bd.id = 'sidebarBackdrop';
+    bd.className = 'sidebar-backdrop';
+    document.body.appendChild(bd);
+  }
+  bd.classList.add('show');
+
+  document.documentElement.classList.add('drawer-open');
+  document.body.classList.add('drawer-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
   const sb = document.querySelector('.sidebar');
   if (sb) sb.classList.remove('open');
+
   const bd = document.getElementById('sidebarBackdrop');
   if (bd) bd.classList.remove('show');
+
+  document.documentElement.classList.remove('drawer-open');
+  document.body.classList.remove('drawer-open');
   document.body.style.overflow = '';
 }
+
+// Native Android WebApp Drawer Gestures (touch swipe & esc)
+(function initAndroidDrawerGestures() {
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTime = 0;
+
+  document.addEventListener('touchstart', function(e) {
+    if (e.touches && e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    const sb = document.querySelector('.sidebar');
+    if (!sb || !sb.classList.contains('open')) return;
+    if (e.changedTouches && e.changedTouches.length === 1) {
+      const diffX = e.changedTouches[0].clientX - touchStartX;
+      const diffY = e.changedTouches[0].clientY - touchStartY;
+      // Close on left swipe: distance >= 40px, more horizontal than vertical
+      if (diffX < -40 && Math.abs(diffX) > Math.abs(diffY)) {
+        closeSidebar();
+      }
+    }
+  }, { passive: true });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSidebar();
+  });
+})();
 
 function handleAccountClick() {
   if (!currentUser) {

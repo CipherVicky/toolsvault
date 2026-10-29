@@ -190,6 +190,9 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
     </div>
   </div>
 
+  <!-- MOBILE DRAWER BACKDROP (Real Android WebApp overlay) -->
+  <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar(event)"></div>
+
   <!-- MAIN LAYOUT -->
   <div class="app-layout">
 
@@ -201,7 +204,7 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
           <span style="font-weight:800;letter-spacing:-0.02em;font-size:17px;color:#fff;">Tools<span style="color:var(--accent);">Vault</span></span>
           <span class="vault-status-dot" title="Access Armed" style="width:7px;height:7px;background:#00ff9d;border-radius:50%;box-shadow:0 0 8px #00ff9d;display:inline-block;margin-left:6px;"></span>
         </div>
-        <button class="sidebar-close-btn" onclick="closeSidebar()" aria-label="Close menu" style="margin-left:auto;">
+        <button class="sidebar-close-btn" onclick="closeSidebar(event)" aria-label="Close menu" type="button" style="margin-left:auto;">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -292,7 +295,7 @@ window.gtRefLink=function(){try{if(window.gtRef())return localStorage.getItem('g
       <!-- TOP BAR -->
       <header class="topbar">
         <div class="topbar-left">
-          <button class="sidebar-toggle" onclick="toggleSidebar()">
+          <button class="sidebar-toggle" onclick="toggleSidebar(event)" aria-label="Toggle navigation drawer" type="button">
             <i class="fas fa-bars"></i>
           </button>
           <!-- FUTURE (AI search): make this typo-tolerant + description-based —
