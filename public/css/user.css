@@ -2639,7 +2639,7 @@ html.lite-mode .nav-badge-new::after { animation: none; display: none; }
   }
   .sidebar.open { transform: translateX(0); }
   .sidebar-toggle { display: block; }
-  .tools-grid { grid-template-columns: 1fr; }
+  .tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
   .hero-title { font-size: 36px; }
   .tool-detail-hero { padding: 22px; }
   .tool-detail-title { font-size: 22px; }
@@ -2648,8 +2648,9 @@ html.lite-mode .nav-badge-new::after { animation: none; display: none; }
   .access-item { flex-wrap: wrap; }
 }
 @media (max-width: 600px) {
-  .page { padding: 20px 16px; }
-  .topbar { padding: 0 12px; }
+  .tools-grid { grid-template-columns: 1fr; gap: 14px; }
+  .page { padding: 18px 12px; }
+  .topbar { padding: 0 10px; }
   /* On a phone a centred pill between the toggle and three icons has nowhere to
      live, so stop centring: let it flow in the left group and fill whatever
      space is left. min-width:0 lets it shrink instead of shoving the icons. */
@@ -5178,17 +5179,18 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
    TOOLSVAULT CYBER ACCESS SUITE & ARSENAL STYLING
    ========================================================================== */
 
-/* ── Banner Wrap on Home ── */
+/* ── Compact & Responsive Banner Wrap on Home ── */
 .vault-banner-wrap {
-  margin: 0 0 24px 0;
+  margin: 0 auto 18px;
   width: 100%;
+  max-width: 920px;
 }
 .vault-banner-card {
   position: relative;
-  border-radius: 18px;
+  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(0, 255, 157, 0.25);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 255, 157, 0.12);
+  border: 1px solid rgba(0, 255, 157, 0.22);
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 157, 0.08);
   background: #091117;
   display: flex;
   flex-direction: column;
@@ -5196,28 +5198,29 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
 .vault-banner-img {
   width: 100%;
   height: auto;
-  max-height: 280px;
+  max-height: 125px;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 .vault-banner-hud {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 22px;
-  background: rgba(9, 17, 23, 0.95);
+  padding: 8px 18px;
+  background: rgba(9, 17, 23, 0.96);
   backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(0, 255, 157, 0.18);
+  border-top: 1px solid rgba(0, 255, 157, 0.16);
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
 }
 .vault-hud-status {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 12px;
-  letter-spacing: 0.08em;
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
   color: var(--text-2);
 }
 .vault-hud-status b {
@@ -5225,17 +5228,22 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   font-weight: 700;
 }
 .vault-hud-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #00ff9d;
-  box-shadow: 0 0 10px #00ff9d;
+  box-shadow: 0 0 8px #00ff9d;
   animation: pulse-dot 1.8s infinite;
 }
 .vault-hud-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+}
+.vault-hud-actions .btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: 8px;
 }
 
 /* ── Dedicated Full-Stack Auth Page (#page-auth) ── */
@@ -5269,18 +5277,18 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   background: linear-gradient(90deg, #00ff9d, #00e5ff, #00ff9d);
 }
 .auth-cyber-header {
-  padding: 30px 28px 20px;
+  padding: 28px 24px 18px;
   text-align: center;
 }
 .auth-cyber-shield {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 14px;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 12px;
   display: block;
   filter: drop-shadow(0 0 16px rgba(0, 255, 157, 0.45));
 }
 .auth-cyber-title {
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #fff;
@@ -5294,23 +5302,23 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
 }
 .auth-cyber-subtitle {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 11.5px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   color: #00e5ff;
-  margin-top: 6px;
+  margin-top: 5px;
   text-transform: uppercase;
 }
 .auth-cyber-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin: 0 24px 20px;
+  margin: 0 22px 18px;
   background: #05090d;
   border: 1px solid rgba(0, 255, 157, 0.15);
   border-radius: 12px;
   padding: 4px;
 }
 .auth-cyber-tab {
-  padding: 10px 14px;
+  padding: 9px 12px;
   background: none;
   border: none;
   color: var(--text-2);
@@ -5331,17 +5339,17 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   box-shadow: 0 2px 10px rgba(0, 255, 157, 0.15);
 }
 .auth-demo-banner {
-  margin: 0 24px 18px;
-  padding: 12px 16px;
+  margin: 0 22px 16px;
+  padding: 11px 14px;
   border-radius: 12px;
   background: rgba(0, 229, 255, 0.08);
   border: 1px solid rgba(0, 229, 255, 0.25);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 .auth-demo-label {
-  font-size: 11px;
+  font-size: 10.5px;
   font-family: ui-monospace, monospace;
   color: #00e5ff;
   font-weight: 600;
@@ -5352,13 +5360,13 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
 }
 .auth-demo-btn {
   width: 100%;
-  padding: 10px 14px;
+  padding: 9px 12px;
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(0, 255, 157, 0.2), rgba(0, 229, 255, 0.2));
   border: 1px solid #00ff9d;
   color: #00ff9d;
   font-weight: 700;
-  font-size: 12.5px;
+  font-size: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -5373,10 +5381,16 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   transform: translateY(-1px);
 }
 .auth-cyber-form {
-  padding: 0 24px 24px;
+  padding: 0 22px 22px;
+}
+.auth-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 .auth-cyber-input-wrap {
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 .auth-cyber-label {
   display: block;
@@ -5385,16 +5399,16 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-2);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 .auth-cyber-input {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: 11px 13px;
+  border-radius: 9px;
   background: #05090d;
   border: 1px solid rgba(0, 255, 157, 0.2);
   color: #fff;
-  font-size: 13.5px;
+  font-size: 13px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   box-sizing: border-box;
@@ -5405,13 +5419,13 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
 }
 .auth-cyber-submit {
   width: 100%;
-  padding: 13px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 9px;
   background: var(--gradient-main);
   border: none;
   color: #041014;
   font-weight: 800;
-  font-size: 13.5px;
+  font-size: 13px;
   letter-spacing: 0.04em;
   cursor: pointer;
   display: flex;
@@ -5419,7 +5433,7 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   justify-content: center;
   gap: 8px;
   transition: all 0.2s;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 .auth-cyber-submit:hover {
   background: #00ff9d;
@@ -5427,17 +5441,281 @@ html.lite-mode .spot-slide::after{ animation:none; filter:blur(30px); }
   transform: translateY(-1px);
 }
 .auth-cyber-footer {
-  padding: 16px 24px;
-  background: rgba(5, 9, 13, 0.8);
+  padding: 14px 22px;
+  background: rgba(5, 9, 13, 0.85);
   border-top: 1px solid rgba(0, 255, 157, 0.12);
   text-align: center;
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--text-3);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 .auth-cyber-footer span i {
   color: #00ff9d;
   margin-right: 4px;
+}
+
+/* ==========================================================================
+   GLOBAL MULTI-DEVICE RESPONSIVE SUITE (Phones, Tablets, Laptops, Desktops)
+   ========================================================================== */
+
+/* ── Prevent horizontal overflow everywhere ── */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw;
+}
+.app-layout, .main-wrap {
+  max-width: 100%;
+}
+
+/* ── Tablets & Medium Screens (601px - 1024px) ── */
+@media (max-width: 1024px) {
+  .vault-banner-wrap {
+    max-width: 100%;
+    margin-bottom: 14px;
+  }
+  .vault-banner-img {
+    max-height: 105px;
+  }
+  .vault-banner-hud {
+    padding: 7px 14px;
+  }
+  .vault-hud-status {
+    font-size: 11px;
+  }
+  .vault-hud-actions .btn {
+    padding: 6px 12px;
+    font-size: 11.5px;
+  }
+  .h-deck {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .h-cats {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .tools-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+}
+
+/* ── Phones & Mobile Screens (<= 600px) ── */
+@media (max-width: 600px) {
+  /* Layout & Shell */
+  .page {
+    padding: 14px 10px 48px !important;
+  }
+  .topbar {
+    padding: 0 10px !important;
+    height: 48px !important;
+    gap: 6px !important;
+  }
+  .topbar-left {
+    gap: 6px !important;
+  }
+  .topbar-right {
+    gap: 4px !important;
+  }
+  .topbar-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .avatar-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .tig-lbl {
+    display: none !important;
+  }
+
+  /* Compact Home Banner */
+  .vault-banner-wrap {
+    margin: 0 0 12px 0 !important;
+  }
+  .vault-banner-card {
+    border-radius: 12px !important;
+  }
+  .vault-banner-img {
+    max-height: 72px !important;
+  }
+  .vault-banner-hud {
+    padding: 7px 10px !important;
+    gap: 8px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .vault-hud-status {
+    font-size: 10px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+  .vault-hud-actions {
+    display: flex !important;
+    width: 100% !important;
+    gap: 6px !important;
+  }
+  .vault-hud-actions .btn {
+    flex: 1 !important;
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  /* Home Hero Launcher */
+  .h-hero {
+    padding: 18px 0 16px !important;
+  }
+  .h-hero-h1 {
+    font-size: 21px !important;
+    letter-spacing: -0.02em !important;
+  }
+  .h-hero-sub {
+    font-size: 12px !important;
+    margin-top: 5px !important;
+  }
+  .h-lx {
+    margin-top: 14px !important;
+    width: 100% !important;
+  }
+  .h-lx-bar {
+    height: 46px !important;
+    padding: 0 12px !important;
+    border-radius: 11px !important;
+  }
+  .h-lx-in {
+    font-size: 13px !important;
+  }
+  .h-kbd {
+    display: none !important;
+  }
+
+  /* Grids & Cards */
+  .tools-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .h-deck {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .h-cats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .h-cat {
+    padding: 10px !important;
+  }
+  .h-cat-t {
+    font-size: 12px !important;
+  }
+
+  /* Tool Card Mobile Polish */
+  .tool-card {
+    padding: 14px !important;
+    border-radius: 12px !important;
+  }
+  .tool-header {
+    gap: 10px !important;
+  }
+  .tool-logo, .tool-logo-placeholder {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .tool-name {
+    font-size: 14px !important;
+  }
+
+  /* Auth Portal Mobile */
+  #page-auth {
+    padding: 12px 8px 40px !important;
+  }
+  .auth-cyber-container {
+    max-width: 100% !important;
+  }
+  .auth-cyber-card {
+    border-radius: 14px !important;
+  }
+  .auth-cyber-header {
+    padding: 20px 14px 12px !important;
+  }
+  .auth-cyber-shield {
+    width: 46px !important;
+    height: 46px !important;
+    margin-bottom: 8px !important;
+  }
+  .auth-cyber-title {
+    font-size: 19px !important;
+  }
+  .auth-cyber-subtitle {
+    font-size: 9.5px !important;
+  }
+  .auth-demo-banner {
+    margin: 0 12px 12px !important;
+    padding: 9px 11px !important;
+  }
+  .auth-demo-btn {
+    font-size: 11px !important;
+    padding: 8px 9px !important;
+  }
+  .auth-cyber-tabs {
+    margin: 0 12px 14px !important;
+  }
+  .auth-cyber-tab {
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+  }
+  .auth-cyber-form {
+    padding: 0 12px 18px !important;
+  }
+  .auth-grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+  }
+  .auth-cyber-input {
+    padding: 10px 11px !important;
+    font-size: 12.5px !important;
+  }
+  .auth-cyber-submit {
+    padding: 11px !important;
+    font-size: 12px !important;
+  }
+  .auth-cyber-footer {
+    padding: 11px 12px !important;
+    font-size: 9.5px !important;
+  }
+
+  /* Dropdowns on Mobile */
+  .dropdown-panel {
+    width: calc(100vw - 20px) !important;
+    max-width: 320px !important;
+    right: 0 !important;
+  }
+}
+
+/* ── Very Small Phones (<= 380px) ── */
+@media (max-width: 380px) {
+  .vault-banner-img {
+    max-height: 52px !important;
+  }
+  .vault-hud-status {
+    font-size: 9px !important;
+  }
+  .vault-hud-actions .btn {
+    font-size: 10px !important;
+    padding: 5px 6px !important;
+  }
+  .h-hero-h1 {
+    font-size: 18px !important;
+  }
+  .h-cats {
+    grid-template-columns: 1fr !important;
+  }
 }
